@@ -1,3 +1,5 @@
 build
 migrations
 truffle-config.js
+constTests.js
+node_modules
