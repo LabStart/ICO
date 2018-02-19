@@ -1,21 +1,17 @@
 pragma solidity ^0.4.19;
 
-import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
+import "./Crowdsale.sol";
+import "./CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 
 import "./LabCoin.sol";
 
-contract LabStartCrowdsale is Crowdsale {
+contract LabStartCrowdsale is CappedCrowdsale {
     function LabStartCrowdsale(uint256 startTime, uint256 endTime, uint256 rate,
-        address wallet)
-        Crowdsale(startTime, endTime, rate, wallet) public {
+        address wallet, uint256 cap, address labcoinAddress)
+        Crowdsale(startTime, endTime, rate, wallet, labcoinAddress)
+        CappedCrowdsale(cap) public {
 
     }
-
-    // creates the token to be sold.
-    // override this method to have crowdsale of a specific mintable token.
-    function createTokenContract() internal returns (MintableToken) {
-        return new LabCoin();
-    }
-
+    
 }

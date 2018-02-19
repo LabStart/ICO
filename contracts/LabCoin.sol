@@ -1,9 +1,14 @@
 pragma solidity ^0.4.19;
 
-import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "./SharedMintableToken.sol";
 
-contract LabCoin is MintableToken {
+contract LabCoin is SharedMintableToken {
     string public constant name = "LabCoin";
     string public constant symbol = "LAB";
     uint8 public constant decimals = 18;
+
+    function LabCoin(address ownerA, address ownerB)
+        SharedMintableToken(ownerA, ownerB) public {
+
+    }
 }

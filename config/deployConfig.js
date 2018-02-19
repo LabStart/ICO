@@ -1,0 +1,5 @@
+module.exports = Object.freeze({
+    LABCOIN_INITIAL_OWNER_A_ACCOUNT_NUMBER: 0,
+    LABCOIN_INITIAL_OWNER_B_ACCOUNT_NUMBER: 1,
+    AVAILABLE_ACCOUNT_NUMBER_NOT_OWNER: 2 // for TestLabCoin.js
+});
