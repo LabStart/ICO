@@ -5,7 +5,7 @@ module.exports = Object.freeze({
     ICO_RATE_SECOND_PHASE: 300,
     ICO_START_TIME: 1527112800, // 24/05/2018 00:00:00
     ICO_SECOND_PHASE_START_TIME: 1528495200, // 09/06/2018 00:00:00
-    ICO_END_TIME: 1529791200, // 24/06/2018 00:00:00
+    ICO_END_TIME: 1529704800, // 23/06/2018 00:00:00
     ICO_INVESTOR_NUMBER: 1 // For TestLabStartICO
                          // TODO(optional): rename as ICO_INVESTOR_INDEX
 });
