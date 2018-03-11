@@ -28,22 +28,4 @@ contract('LabCoin', (accounts) => {
         });
     });
 
-    it("Ownly owners can mint", () => {
-        return _labcoinInstance.mint(accounts[deployConfig.AVAILABLE_ACCOUNT_NUMBER_NOT_OWNER], 10,
-            {from: accounts[deployConfig.LABCOIN_INITIAL_OWNER_A_ACCOUNT_NUMBER]})
-       .then(function() {
-            return _labcoinInstance.mint(
-                accounts[deployConfig.LABCOIN_INITIAL_OWNER_A_ACCOUNT_NUMBER],
-                10, {from: accounts[deployConfig.AVAILABLE_ACCOUNT_NUMBER_NOT_OWNER]})
-        })
-        .then(function() {
-            assert.ok(false,
-                 "Only the owner should be able to mint labcoins");
-        }).catch(function(err) {
-            if(err.toString() !== "Error: VM Exception while processing transaction: revert") {
-                 throw err;
-            }
-        })
-    });
-
 });

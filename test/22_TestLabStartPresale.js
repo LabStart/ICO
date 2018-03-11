@@ -116,7 +116,7 @@ contract('LabStartPresale', (accounts) => {
     });
 
     // Investing 1 eth
-    it("Standard LabCoin purchase", () => {
+    it("Invest 1 eth in the presale", () => {
         let investedAmount = 1; // Invested amount by the investor, in ether
         let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
         return _presaleInstance.sendTransaction({
@@ -144,58 +144,6 @@ contract('LabStartPresale', (accounts) => {
        })
     });
 
-    // Buying the max remaining Labcoins avalaible (i.e the cap) - 1 eth (because of the)
-    // preceding test
-    it("Whitelist LabCoin purchase", () => {
-        let investedAmount = web3.fromWei(presaleCap, "ether") - 1;
-        let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-        // Adding the investor to the presale whitelist
-        return _presaleInstance.addToWhitelist(investor)
-        .then(function() {
-            return _presaleInstance.sendTransaction({
-               value: web3.toWei(investedAmount, "ether"),
-               from: investor
-           })
-       })
-       .then(function() {
-           // The owner of the presale should have +ether
-           let ownerBalanceAfter = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-           assert.equal(precisionRound(ownerBalanceAfter.valueOf(), 10),
-                precisionRound(parseFloat(ownerBalanceBefore)+parseFloat(investedAmount).valueOf(), 10),
-                "The wallet should have +presaleCap-1 eth");
-            // Checking the investor Labcoin balance
-            return _tokenInstance.balanceOf(investor);
-       })
-       .then(function(investorLabcoinBalance){
-           // The investor should now have presaleRate*investedAmount Labcoins
-            assert.equal(new BigNumber(investorLabcoinBalance).valueOf(),
-                new BigNumber(web3.toWei((presaleRate*investedAmount)+500, 'ether')).valueOf(),
-                "After buying, the investor should have presaleRate*investedAmount Labcoins")
-            return _presaleInstance.weiRaised.call();
-       })
-       .then(function(weiRaised) {
-           // The amount of token of the presale should be equal to the investedAmount
-           assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount+1, 'ether')).valueOf(),
-            "The amount of token of the presale should be equal to the investedAmount");
-            return _tokenInstance.balanceOf(_presaleInstance.address);
-       })
-    });
-
-    it("Checking the cap works correctly", () => {
-        return _presaleInstance.sendTransaction({
-           value: web3.toWei(0.11, "ether"),
-           from: investor
-       })
-       .then(function() {
-            assert.ok(false,
-                "It should be impossible to buy LabCoins once the cap is reached");
-        }).catch(function(err) {
-            if(err.toString() !== "Error: VM Exception while processing transaction: revert") {
-                throw err;
-            }
-        })
-    });
-
     /**PRE-SALE IS OVER**/
     // The presale should be disabled
     it("No more LabCoin can be bought once the Presale has ended", () => {
@@ -215,6 +163,26 @@ contract('LabStartPresale', (accounts) => {
                 }
             })
         });
+   });
+
+   // The finalization should burn the remaining Labcoins of the presale
+   it("The finalize should burn the remaining Labcoins", () => {
+        return _tokenInstance.balanceOf(_presaleInstance.address)
+        .then(function(presaleBalance) {
+           assert.equal(presaleBalance.valueOf(),
+           new BigNumber(presaleTokenAmount - (presaleRate*1000000000000000000)).valueOf(),
+            "The balance of the presale should be 8 400 000 - 500 LabCoin");
+           return _presaleInstance.finalize()
+        })
+        .then(function() {
+            return _tokenInstance.balanceOf(_presaleInstance.address)
+        })
+        .then(function(presaleBalance) {
+           assert.equal(presaleBalance.valueOf(),
+           new BigNumber(0).valueOf(),
+            "The remaining LabCoins of the presale should be burned once the finalize " +
+            "function has been called.");
+        })
    });
 
 });

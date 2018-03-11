@@ -1,14 +1,18 @@
 pragma solidity ^0.4.19;
 
-import "./SharedMintableToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 
-contract LabCoin is SharedMintableToken {
+contract LabCoin is BurnableToken {
     string public constant name = "LabCoin";
     string public constant symbol = "LAB";
     uint8 public constant decimals = 18;
 
-    function LabCoin(address ownerA, address ownerB)
-        SharedMintableToken(ownerA, ownerB) public {
-
+    /**
+    * @param totalSupply The amount of LabCoin available for the whole crowdsale
+                      (i.e presale, ico and team)
+    */
+    function LabCoin(uint totalSupply) public {
+        totalSupply_ = totalSupply;
+        balances[msg.sender] = totalSupply;
     }
 }

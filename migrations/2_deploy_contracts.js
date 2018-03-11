@@ -7,23 +7,41 @@ var presaleConfig = require('../config/presaleConfig.js');
 var icoConfig = require('../config/icoConfig.js');
 
 module.exports = function(deployer, network, accounts) {
+    const wallet = accounts[presaleConfig.PRESALE_WALLET_ACCOUNT_NUMBER];
 
     /**Deployment of the LabCoin**/
-    let labcoinInitialOwnerA = accounts[deployConfig.LABCOIN_INITIAL_OWNER_A_ACCOUNT_NUMBER];
-    let labcoinInitialOwnerB = accounts[deployConfig.LABCOIN_INITIAL_OWNER_B_ACCOUNT_NUMBER];
-    return deployer.deploy(LabCoin, labcoinInitialOwnerA, labcoinInitialOwnerB)
+    let labCoinInstance;
+    const maxAmountCrowdsale = presaleConfig.PRESALE_LABCOIN_CAP
+        + icoConfig.ICO_TOKEN_AMOUNT;
+    console.log('maxAmountCrowdsale', maxAmountCrowdsale);
+
+    return deployer.deploy(LabCoin, maxAmountCrowdsale)
+    .then(function() {
+        return LabCoin.deployed().then((labCoinInstanceDeployed) => {
+            labCoinInstance = labCoinInstanceDeployed;
+        });
+    })
     .then(function() {
         /**Deployment of the presale**/
         const startTimePresale = presaleConfig.PRESALE_START_TIME;
         const endTimePresale = presaleConfig.PRESALE_END_TIME;
         const ratePresale = presaleConfig.PRESALE_RATE;
-        const capPresale = presaleConfig.PRESALE_CAP;
+        const minInvestAmount = presaleConfig.PRESALE_MIN_INVEST_AMOUNT;
+        const maxInvestAmount = presaleConfig.PRESALE_MAX_INVEST_AMOUNT;
+        const labCoinCap =  presaleConfig.PRESALE_LABCOIN_CAP;
 
         console.log('Presale --', 'startTimePresale: ' + startTimePresale,
             'endTimePresale: ' + endTimePresale, 'ratePresale: ' + ratePresale,
-            'capPresale: ' + capPresale, accounts[0]);
+            'minInvestAmount' + minInvestAmount,
+            accounts[0]);
         return deployer.deploy(LabStartPresale, startTimePresale, endTimePresale,
-            ratePresale, accounts[0], capPresale, LabCoin.address);
+            ratePresale, wallet, labCoinCap, minInvestAmount, maxInvestAmount,
+            LabCoin.address);
+    })
+    .then(function() {
+        /** Sending enough LabCoin for the presale **/
+        return labCoinInstance.transfer(LabStartPresale.address,
+            presaleConfig.PRESALE_LABCOIN_CAP);
     })
     .then(function() {
         /**Deployment of the ico**/
@@ -32,33 +50,24 @@ module.exports = function(deployer, network, accounts) {
         const endTimeIco = icoConfig.ICO_END_TIME;
         const rateFirstPhaseIco = icoConfig.ICO_RATE_FIRST_PHASE;
         const rateSecondPhaseIco = icoConfig.ICO_RATE_SECOND_PHASE;
-        const capIco = icoConfig.ICO_CAP;
+        const minInvestAmount = icoConfig.ICO_MIN_INVEST_AMOUNT;
+        const maxInvestAmount = icoConfig.ICO_MAX_INVEST_AMOUNT;
+        const labCoinCap =  icoConfig.ICO_LABCOIN_CAP;
+        const icoGoal = icoConfig.ICO_SOFT_CAP;
 
         console.log('ICO --', 'startTimeIco: ' + startTimeIco, 'secondPhaseStartTimeIco: '
             + secondPhaseStartTimeIco, 'endTimeIco: ' + endTimeIco,
             'rateFirstPhaseIco: ' + rateFirstPhaseIco, 'rateSecondPhaseIco: '
-            + rateSecondPhaseIco, 'capIco: ' + capIco, accounts[0]);
+            + rateSecondPhaseIco, wallet);
         return deployer.deploy(LabStartICO, startTimeIco, secondPhaseStartTimeIco,
-            endTimeIco, rateFirstPhaseIco, rateSecondPhaseIco, accounts[0],
-            capIco, LabCoin.address);
+            endTimeIco, rateFirstPhaseIco, rateSecondPhaseIco, wallet, labCoinCap,
+            minInvestAmount, maxInvestAmount, LabCoin.address,
+            LabStartPresale.address, icoGoal);
     })
     .then(function() {
-        /**Transferring the minting control of the LabCoin to the presale**/
-        return LabCoin.deployed().then((labcoinInstance) => {
-            return labcoinInstance.transferOwnership(LabStartPresale.address,
-                {from: labcoinInitialOwnerA});
-        }).then(function() {
-            console.log('LabCoin minting control transferred to the Presale contract');
-        });
-    })
-    .then(function() {
-        /**Transferring the minting control of the LabCoin to the ICO**/
-        return LabCoin.deployed().then((labcoinInstance) => {
-            return labcoinInstance.transferOwnership(LabStartICO.address,
-                {from: labcoinInitialOwnerB});
-        }).then(function() {
-            console.log('LabCoin minting control transferred to the ICO contract');
-        });
+        /** Sending enough LabCoin for the ICO **/
+        return labCoinInstance.transfer(LabStartICO.address,
+            icoConfig.ICO_TOKEN_AMOUNT);
     })
 
 };
