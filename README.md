@@ -1,6 +1,8 @@
-# LabStart Token sale
 
-Important ressources
+# LabStart Token sale
+<img src="https://cdn-images-1.medium.com/max/1000/1*XmqMwOuk9P1j6L3gkxAJsw.jpeg"/>
+
+Important ressources:
 - [LabStart Whitepaper](https://labstart.tech/ressources/uploads/2018/02/Whitepaper_V1.2.pdf)
 - [Token sale registration and details](https://labstart.tech/token-sale/)
 
@@ -10,8 +12,8 @@ Token:
 
 Sale:
  - [LabStartCrowdsale.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartCrowdsale.sol "LabStartCrowdsale.sol"): Implementation of the features of the Crowdsale. It is derived from the [OpenZeppelin](https://github.com/OpenZeppelin/zeppelin-solidity) [FinalizableCrowdsale](https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/crowdsale/distribution/FinalizableCrowdsale.sol "FinalizableCrowdsale.sol") contract.
-- [LabStartPresale.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartPresale.sol "LabStartPresale.sol"): The LabStart Presale. Derives from [LabStartCrowdsale.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartCrowdsale.sol "LabStartCrowdsale.sol") and burns the remaining LAB at the end of the presale.
-- [LabStartICO.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartICO.sol "LabStartICO.sol"): The ICO. Derives from [LabStartCrowdsale.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartCrowdsale.sol "LabStartCrowdsale.sol"). At the end of the ICO, sends LAB to the team, such as the team owns 20% of the total supply of LAB when the crowdsale is over. Burns the remaining LAB at the end of the ICO.
+- [LabStartPresale.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartPresale.sol "LabStartPresale.sol"): The LabStart pre-sale. Derives from [LabStartCrowdsale.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartCrowdsale.sol "LabStartCrowdsale.sol") and burns the remaining LAB at the end of the pre-sale.
+- [LabStartICO.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartICO.sol "LabStartICO.sol"): The ICO. Derives from [LabStartCrowdsale.sol](https://github.com/LabStart/ICO/blob/master/contracts/LabStartCrowdsale.sol "LabStartCrowdsale.sol"). At the end of the ICO, sends LAB to the team, so that the team owns 20% of the total supply of LAB when the crowdsale is over. Burns the remaining LAB at the end of the ICO.
 
 # Installation
 
@@ -33,7 +35,7 @@ module.exports = {
       }
 };
 ```
-You can now migrate the LabStart Crowdsale (Presale and ICO) on the network of your choice, using the migrate command.
+You can now migrate the LabStart Crowdsale (pre-sale and ICO) on the network of your choice, using the migrate command.
 ```sh
 truffle migrate
 ```
