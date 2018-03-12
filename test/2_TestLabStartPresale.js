@@ -99,7 +99,7 @@ contract('LabStartPresale', (accounts) => {
     });
 
     // Trying to invest 0,09 eth while the min invest amount is 0,1 eth
-    it("Max invest amount not whitelisted", () => {
+    it("Not whitelisted", () => {
         let investedAmount = web3.toWei(1.0011, "ether");
         return _presaleInstance.sendTransaction({
            value: investedAmount,
@@ -115,39 +115,10 @@ contract('LabStartPresale', (accounts) => {
         })
     });
 
-    // Investing 1 eth
-    it("Standard LabCoin purchase", () => {
-        let investedAmount = 1; // Invested amount by the investor, in ether
-        let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-        return _presaleInstance.sendTransaction({
-           value: web3.toWei(investedAmount, "ether"),
-           from: investor
-       }).then(function() {
-           // The wallet should have +ether
-           let ownerBalanceAfter = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-           assert.equal(precisionRound(ownerBalanceAfter.valueOf(), 10),
-                precisionRound(parseFloat(ownerBalanceBefore)+parseFloat(investedAmount).valueOf(), 10),
-                "The wallet should have +1 eth");
-            // Checking the investor Labcoin balance
-            return _tokenInstance.balanceOf(investor);
-       }).then(function(investorLabcoinBalance){
-           // The investor should now have presaleRate*investedAmount Labcoins
-            assert.equal(investorLabcoinBalance.valueOf(),
-                new BigNumber(web3.toWei(presaleRate*investedAmount, 'ether')).valueOf(),
-                "After buying, the investor should have presaleRate*investedAmount Labcoins")
-            return _presaleInstance.weiRaised.call();
-       }).then(function(weiRaised) {
-           // The amount of token of the presale should be equal to the investedAmount
-           assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount, 'ether')).valueOf(),
-            "The amount of token of the presale should be equal to the investedAmount");
-            return _tokenInstance.balanceOf(_presaleInstance.address);
-       })
-    });
-
     // Buying the max remaining Labcoins avalaible (i.e the cap) - 1 eth (because of the)
     // preceding test
     it("Whitelist LabCoin purchase", () => {
-        let investedAmount = web3.fromWei(presaleCap, "ether") - 1;
+        let investedAmount = web3.fromWei(presaleCap, "ether");
         let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
         // Adding the investor to the presale whitelist
         return _presaleInstance.addToWhitelist(investor)
@@ -169,13 +140,13 @@ contract('LabStartPresale', (accounts) => {
        .then(function(investorLabcoinBalance){
            // The investor should now have presaleRate*investedAmount Labcoins
             assert.equal(new BigNumber(investorLabcoinBalance).valueOf(),
-                new BigNumber(web3.toWei((presaleRate*investedAmount)+500, 'ether')).valueOf(),
+                new BigNumber(web3.toWei((presaleRate*investedAmount), 'ether')).valueOf(),
                 "After buying, the investor should have presaleRate*investedAmount Labcoins")
             return _presaleInstance.weiRaised.call();
        })
        .then(function(weiRaised) {
            // The amount of token of the presale should be equal to the investedAmount
-           assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount+1, 'ether')).valueOf(),
+           assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount, 'ether')).valueOf(),
             "The amount of token of the presale should be equal to the investedAmount");
             return _tokenInstance.balanceOf(_presaleInstance.address);
        })

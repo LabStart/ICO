@@ -27,7 +27,6 @@ module.exports = function(deployer, network, accounts) {
         const endTimePresale = presaleConfig.PRESALE_END_TIME;
         const ratePresale = presaleConfig.PRESALE_RATE;
         const minInvestAmount = presaleConfig.PRESALE_MIN_INVEST_AMOUNT;
-        const maxInvestAmount = presaleConfig.PRESALE_MAX_INVEST_AMOUNT;
         const labCoinCap =  presaleConfig.PRESALE_LABCOIN_CAP;
 
         console.log('Presale --', 'startTimePresale: ' + startTimePresale,
@@ -35,7 +34,7 @@ module.exports = function(deployer, network, accounts) {
             'minInvestAmount' + minInvestAmount,
             accounts[0]);
         return deployer.deploy(LabStartPresale, startTimePresale, endTimePresale,
-            ratePresale, wallet, labCoinCap, minInvestAmount, maxInvestAmount,
+            ratePresale, wallet, labCoinCap, minInvestAmount,
             LabCoin.address);
     })
     .then(function() {
@@ -51,7 +50,6 @@ module.exports = function(deployer, network, accounts) {
         const rateFirstPhaseIco = icoConfig.ICO_RATE_FIRST_PHASE;
         const rateSecondPhaseIco = icoConfig.ICO_RATE_SECOND_PHASE;
         const minInvestAmount = icoConfig.ICO_MIN_INVEST_AMOUNT;
-        const maxInvestAmount = icoConfig.ICO_MAX_INVEST_AMOUNT;
         const labCoinCap =  icoConfig.ICO_LABCOIN_CAP;
         const icoGoal = icoConfig.ICO_SOFT_CAP;
 
@@ -61,7 +59,7 @@ module.exports = function(deployer, network, accounts) {
             + rateSecondPhaseIco, wallet);
         return deployer.deploy(LabStartICO, startTimeIco, secondPhaseStartTimeIco,
             endTimeIco, rateFirstPhaseIco, rateSecondPhaseIco, wallet, labCoinCap,
-            minInvestAmount, maxInvestAmount, LabCoin.address,
+            minInvestAmount, LabCoin.address,
             LabStartPresale.address, icoGoal);
     })
     .then(function() {

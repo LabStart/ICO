@@ -104,7 +104,7 @@ contract('LabStartICO', (accounts) => {
     });
 
     // Trying to invest 0,09 eth while the min invest amount is 0,1 eth
-    it("Max invest amount not whitelisted", () => {
+    it("Not whitelisted", () => {
         let investedAmount = web3.toWei(1.0011, "ether");
         return _icoInstance.sendTransaction({
            value: investedAmount,
@@ -127,34 +127,9 @@ contract('LabStartICO', (accounts) => {
         });
     });
 
-    /**SECOND PHASE OF THE ICO IS ACTIVE**/
-    // Investing 1 eth
-    it("Standard LabCoin purchase - Second phase", () => {
-        let investedAmount = 1; // Invested amount by the investor, in ether
-        let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-        return _icoInstance.sendTransaction({
-           value: web3.toWei(investedAmount, "ether"),
-           from: investor
-       }).then(function() {
-            // Checking the investor Labcoin balance
-            return _tokenInstance.balanceOf(investor);
-       }).then(function(investorLabcoinBalance){
-           // The investor should now have icoRateSecondPhase*investedAmount Labcoins
-            assert.equal(investorLabcoinBalance.valueOf(),
-                new BigNumber(web3.toWei((icoRateSecondPhase*investedAmount), 'ether')).valueOf(),
-                "After buying, the investor should have icoRateSecondPhase*investedAmount Labcoins")
-            return _icoInstance.weiRaised.call();
-       }).then(function(weiRaised) {
-           // The amount of token of the ico should be equal to the investedAmount
-           assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount, 'ether')).valueOf(),
-            "The amount of token of the ico should be equal to the investedAmount");
-            return _tokenInstance.balanceOf(_icoInstance.address);
-       })
-    });
-
     // Buying the max remaining Labcoins avalaible (i.e the cap)
     it("Whitelist LabCoin purchase", () => {
-        let investedAmount = 83999;
+        let investedAmount = 84000;
         let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
         // Adding the investor to the ico whitelist
         return _icoInstance.addToWhitelist(investor)
@@ -171,13 +146,13 @@ contract('LabStartICO', (accounts) => {
        .then(function(investorLabcoinBalance){
            // The investor should now have icoRateSecondPhase*investedAmount Labcoins
             assert.equal(new BigNumber(investorLabcoinBalance).valueOf(),
-                new BigNumber(web3.toWei((icoRateSecondPhase*investedAmount)+300, 'ether')).valueOf(),
+                new BigNumber(web3.toWei((icoRateSecondPhase*investedAmount), 'ether')).valueOf(),
                 "After buying, the investor should have icoRateSecondPhase*investedAmount Labcoins")
             return _icoInstance.weiRaised.call();
        })
        .then(function(weiRaised) {
            // The amount of token of the ico should be equal to the investedAmount
-           assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount+1, 'ether')).valueOf(),
+           assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount, 'ether')).valueOf(),
             "The amount of token of the ico should be equal to the investedAmount");
             return _tokenInstance.balanceOf(_icoInstance.address);
        })

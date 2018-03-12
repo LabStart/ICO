@@ -16,10 +16,10 @@ contract LabStartICO is LabStartCrowdsale, RefundableCrowdsale {
     function LabStartICO(uint256 startTime, uint256 secondPhaseStartTime,
         uint256 endTime, uint256 rateFirstPhase, uint256 rateSecondPhase,
         address wallet, uint256 labcoinCap, uint256 minInvestAmount,
-        uint256 maxInvestAmount, address labcoinAddress, address presaleAddress,
+        address labcoinAddress, address presaleAddress,
         uint256 goal)
         LabStartCrowdsale(startTime, endTime, rateFirstPhase, wallet, labcoinCap,
-        minInvestAmount, maxInvestAmount, labcoinAddress)
+        minInvestAmount, labcoinAddress)
         RefundableCrowdsale(goal)
         public {
          _rateFirstPhase = rateFirstPhase;

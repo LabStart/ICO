@@ -110,7 +110,7 @@ contract('Presale and ICO integration test', (accounts) => {
     });
 
     // Trying to invest 0,09 eth while the min invest amount is 0,1 eth
-    it("Max invest amount not whitelisted", () => {
+    it("Not whitelisted", () => {
         let investedAmount = web3.toWei(1.0011, "ether");
         return _presaleInstance.sendTransaction({
            value: investedAmount,
@@ -130,10 +130,14 @@ contract('Presale and ICO integration test', (accounts) => {
     it("Invest 1 eth in the presale", () => {
         let investedAmount = 1; // Invested amount by the investor, in ether
         let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-        return _presaleInstance.sendTransaction({
-           value: web3.toWei(investedAmount, "ether"),
-           from: investor
-       }).then(function() {
+        return _presaleInstance.addToWhitelist(investor)
+        .then(function() {
+            return _presaleInstance.sendTransaction({
+               value: web3.toWei(investedAmount, "ether"),
+               from: investor
+           })
+       })
+       .then(function() {
            // The wallet should have +ether
            let ownerBalanceAfter = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
            assert.equal(precisionRound(ownerBalanceAfter.valueOf(), 10),
@@ -339,10 +343,14 @@ contract('Presale and ICO integration test', (accounts) => {
    it("Standard LabCoin purchase - Second phase", () => {
        let investedAmount = 1; // Invested amount by the investor, in ether
        let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-       return _icoInstance.sendTransaction({
-          value: web3.toWei(investedAmount, "ether"),
-          from: investor
-      }).then(function() {
+       return _icoInstance.addToWhitelist(investor)
+       .then(function() {
+           return _icoInstance.sendTransaction({
+              value: web3.toWei(investedAmount, "ether"),
+              from: investor
+          })
+      })
+      .then(function() {
            // Checking the investor Labcoin balance
            return _tokenInstance.balanceOf(investor);
       }).then(function(investorLabcoinBalance){

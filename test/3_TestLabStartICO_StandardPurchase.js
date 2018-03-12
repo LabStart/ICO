@@ -104,7 +104,7 @@ contract('LabStartICO', (accounts) => {
     });
 
     // Trying to invest 0,09 eth while the min invest amount is 0,1 eth
-    it("Max invest amount not whitelisted", () => {
+    it("Not whitelisted", () => {
         let investedAmount = web3.toWei(1.0011, "ether");
         return _icoInstance.sendTransaction({
            value: investedAmount,
@@ -124,23 +124,27 @@ contract('LabStartICO', (accounts) => {
     it("Standard LabCoin purchase - First phase", () => {
         let investedAmount = 1; // Invested amount by the investor, in ether
         let ownerBalanceBefore = web3.fromWei(web3.eth.getBalance(walletAddress), "ether");
-        return _icoInstance.sendTransaction({
-           value: web3.toWei(investedAmount, "ether"),
-           from: investor
-       }).then(function() {
+        return _icoInstance.addToWhitelist(investor)
+        .then(function() {
+            return _icoInstance.sendTransaction({
+               value: web3.toWei(investedAmount, "ether"),
+               from: investor
+           })
+        })
+        .then(function() {
             return _tokenInstance.balanceOf(investor);
-       }).then(function(investorLabcoinBalance){
+        }).then(function(investorLabcoinBalance){
            // The investor should now have icoRateFirstPhase*investedAmount Labcoins
             assert.equal(investorLabcoinBalance.valueOf(),
                 new BigNumber(web3.toWei(icoRateFirstPhase*investedAmount, 'ether')).valueOf(),
                 "After buying, the investor should have icoRateFirstPhase*investedAmount Labcoins")
             return _icoInstance.weiRaised.call();
-       }).then(function(weiRaised) {
+        }).then(function(weiRaised) {
            // The amount of token of the ico should be equal to the investedAmount
            assert.equal(weiRaised.valueOf(), new BigNumber(web3.toWei(investedAmount, 'ether')).valueOf(),
             "The amount of token of the ico should be equal to the investedAmount");
             return _tokenInstance.balanceOf(_icoInstance.address);
-       })
+        })
     });
 
     it("Waiting ico second phase to start", () => {

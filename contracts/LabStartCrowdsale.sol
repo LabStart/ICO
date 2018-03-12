@@ -4,12 +4,13 @@ import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/distribution/FinalizableCrowdsale.sol";
+import "zeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 import "./LabCoin.sol";
 
-contract LabStartCrowdsale is FinalizableCrowdsale {
+contract LabStartCrowdsale is WhitelistedCrowdsale, FinalizableCrowdsale {
     using SafeMath for uint256;
 
     uint256 public labcoinsSold_; // Amount of tokens sold
@@ -26,45 +27,15 @@ contract LabStartCrowdsale is FinalizableCrowdsale {
      * @param wallet Address where collected funds will be forwarded to
      * @param labcoinCap Max amount of LabCoins that can be bought via the crowdsale
      * @param minInvestAmount Min amount of wei for an investment in the crowdsale
-     * @param maxInvestAmount Max amount of wei for an investment in the crowdsale without
-     * being whitelisted
      * @param labcoinAddress Address of the LabCoin
      */
     function LabStartCrowdsale(uint256 startTime, uint256 endTime, uint256 rate,
-        address wallet, uint256 labcoinCap, uint256 minInvestAmount, uint256 maxInvestAmount,
-        address labcoinAddress)
+        address wallet, uint256 labcoinCap, uint256 minInvestAmount, address labcoinAddress)
         Crowdsale(rate, wallet, ERC20(labcoinAddress))
         TimedCrowdsale(startTime, endTime)
         public {
             minInvestAmount_ = minInvestAmount;
-            maxInvestAmount_ = maxInvestAmount;
             labcoinCap_ = labcoinCap;
-    }
-
-    /**
-     * @dev Adds single address to whitelist.
-     * @param _beneficiary Address to be added to the whitelist
-     */
-    function addToWhitelist(address _beneficiary) external onlyOwner {
-      whitelist[_beneficiary] = true;
-    }
-
-    /**
-     * @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing.
-     * @param _beneficiaries Addresses to be added to the whitelist
-     */
-    function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-      for (uint256 i = 0; i < _beneficiaries.length; i++) {
-        whitelist[_beneficiaries[i]] = true;
-      }
-    }
-
-    /**
-     * @dev Removes single address from whitelist.
-     * @param _beneficiary Address to be removed to the whitelist
-     */
-    function removeFromWhitelist(address _beneficiary) external onlyOwner {
-      whitelist[_beneficiary] = false;
     }
 
     /**
@@ -83,9 +54,6 @@ contract LabStartCrowdsale is FinalizableCrowdsale {
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
       super._preValidatePurchase(_beneficiary, _weiAmount);
       require(_weiAmount >= minInvestAmount_);
-      if(_weiAmount > maxInvestAmount_) {
-          require(whitelist[_beneficiary]);
-      }
     }
 
     /**

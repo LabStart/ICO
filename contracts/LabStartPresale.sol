@@ -5,10 +5,9 @@ import "./LabCoin.sol";
 
 contract LabStartPresale is LabStartCrowdsale {
     function LabStartPresale(uint256 startTime, uint256 endTime, uint256 rate,
-        address wallet, uint256 labcoinCap, uint256 minInvestAmount, uint256 maxInvestAmount,
-        address labcoinAddress)
+        address wallet, uint256 labcoinCap, uint256 minInvestAmount, address labcoinAddress)
      LabStartCrowdsale(startTime, endTime, rate, wallet, labcoinCap,
-         minInvestAmount, maxInvestAmount, labcoinAddress) public {
+         minInvestAmount, labcoinAddress) public {
 
     }
 
