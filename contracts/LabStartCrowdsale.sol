@@ -17,7 +17,6 @@ contract LabStartCrowdsale is WhitelistedCrowdsale, FinalizableCrowdsale {
     uint256 private minInvestAmount_;
     uint256 private maxInvestAmount_;
     uint256 private labcoinCap_;
-    mapping(address => bool) public whitelist;
 
 
     /**
